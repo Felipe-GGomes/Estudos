@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Felipe Gomes — Power Farm (Calendário de Elite)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --s1: #0f0f1a;
+  --s2: #161625;
+  --s3: #1e1e30;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8e8f0;
+  --muted: #5a5a7a;
+  --muted2: #8888aa;
+  
+  --work: #3b82f6;
+  --aula: #ef4444;
+  --ic: #6b7280;
+  --coursera: #f59e0b;
+  --livre: #8b5cf6;
+  --revisao: #10b981;
+  --check: #10b981;
+  
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Sora', sans-serif;
+  --radius: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── LAYOUT ─────────────────────────────── */
+.app { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ─────────────────────────────── */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 24px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  padding: 0 24px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-name {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+
+.sidebar-sub {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 3px;
+  letter-spacing: .03em;
+}
+
+/* mini month indicator */
+.mini-cal {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.mini-cal-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.month-track { display: flex; flex-direction: column; gap: 8px; }
+
+.month-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--s2);
+  border: 1px solid transparent;
+  transition: all .2s;
+  opacity: 0.6;
+}
+
+.month-item.active {
+  border-color: var(--coursera);
+  background: rgba(245,158,11,.06);
+  opacity: 1;
+}
+
+.month-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.mb-1 { background: rgba(59,130,246,.2); color: #93c5fd; }
+.mb-2 { background: rgba(16,185,129,.2); color: #6ee7b7; }
+.mb-3 { background: rgba(245,158,11,.2); color: #fcd34d; }
+.mb-4 { background: rgba(139,92,246,.2); color: #c4b5fd; }
+
+.month-info { flex: 1; min-width: 0; }
+.month-label { font-family: var(--mono); font-size: 10px; color: var(--muted2); }
+.month-course { font-size: 11px; font-weight: 500; color: var(--text); margin-top: 2px; line-height: 1.35; }
+
+/* calendar nav */
+.calendar-nav {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.calendar-nav::-webkit-scrollbar { width: 6px; }
+.calendar-nav::-webkit-scrollbar-track { background: transparent; }
+.calendar-nav::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 10px; }
+
+.month-divider {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin: 16px 8px 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+/* WEEKS ACCORDION */
+.week-group { margin-bottom: 8px; }
+
+.week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--s2);
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted2);
+  transition: all .2s;
+  border: 1px solid var(--border);
+}
+
+.week-header:hover { background: var(--s3); color: var(--text); }
+.week-header.open { border-color: var(--border2); }
+
+.week-header.done {
+  text-decoration: line-through;
+  opacity: 0.5;
+  border-color: transparent;
+}
+.week-header.done::after {
+  content: '✓';
+  color: var(--check);
+  font-size: 12px;
+}
+
+.week-days {
+  display: none;
+  flex-direction: column;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  margin-left: 16px;
+  margin-top: 6px;
+  gap: 2px;
+}
+
+.week-days.open { display: flex; }
+
+.day-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--muted2);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+}
+
+.day-btn:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+.day-btn.active { background: var(--s3); color: var(--text); font-weight: 600; border-left: 2px solid var(--coursera); border-radius: 0 6px 6px 0; }
+
+.day-date-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  width: 20px;
+  text-align: right;
+}
+
+.day-btn.active .day-date-num { color: var(--coursera); }
+.day-btn.is-today .day-date-num { color: var(--work); font-weight: 700; }
+
+.day-week-name { flex: 1; }
+
+.day-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* progress & backup */
+.sidebar-footer {
+  padding: 16px 24px 0;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.prog-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.prog-bar {
+  height: 4px;
+  background: var(--s3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.prog-fill {
+  height: 100%;
+  background: var(--coursera);
+  border-radius: 2px;
+  transition: width .4s ease;
+}
+
+/* IMPORT / EXPORT BUTTONS */
+.backup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.backup-btn {
+  flex: 1;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  color: var(--muted2);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.backup-btn:hover { background: var(--s3); color: var(--text); border-color: var(--border2); }
+
+/* ── MAIN ─────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 28px 60px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.main-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.main-day-name {
+  font-family: var(--mono);
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.1;
+}
+
+.main-day-name span { color: var(--coursera); }
+
+.main-meta {
+  font-size: 13px;
+  color: var(--muted2);
+  margin-top: 8px;
+}
+
+.header-right { text-align: right; }
+
+.today-date {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  letter-spacing: .02em;
+}
+
+.check-summary {
+  font-size: 12px;
+  color: var(--muted2);
+  margin-top: 4px;
+}
+
+.check-summary b { color: var(--check); }
+
+/* reset btn */
+.reset-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 6px;
+  letter-spacing: .05em;
+  transition: all .15s;
+  display: block;
+  margin-left: auto;
+}
+
+.reset-btn:hover { border-color: var(--border2); color: var(--muted2); }
+
+/* ── TIMELINE ─────────────────────────────── */
+.timeline { display: flex; flex-direction: column; gap: 8px; }
+
+.block-wrap {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: rise .3s forwards;
+}
+
+@keyframes rise { to { opacity:1; transform:translateY(0); } }
+
+/* block card */
+.block-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+
+.block-card:hover { border-color: var(--border2); }
+.block-card.done { opacity: .5; }
+.block-card.done .block-title { text-decoration: line-through; }
+
+.block-card.type-work   { border-left: 3px solid var(--work); }
+.block-card.type-aula   { border-left: 3px solid var(--aula); }
+.block-card.type-ic     { border-left: 3px solid var(--ic); }
+.block-card.type-coursera{ border-left: 3px solid var(--coursera); }
+.block-card.type-livre  { border-left: 3px solid var(--livre); }
+.block-card.type-revisao{ border-left: 3px solid var(--revisao); }
+
+.block-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.block-check {
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+  cursor: pointer;
+}
+
+.block-check:hover { border-color: var(--check); }
+.block-check.checked { background: var(--check); border-color: var(--check); }
+.block-check.checked::after { content: '✓'; font-size: 11px; color: #fff; font-weight: 700; }
+
+.block-time-range {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted2);
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.block-time-range b { color: var(--text); }
+
+.block-center { flex: 1; min-width: 0; }
+
+.block-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.block-tagrow { display: flex; gap: 5px; margin-top: 4px; flex-wrap: wrap; }
+
+.btag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .04em;
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.btag-work     { background: rgba(59,130,246,.15);  color: #93c5fd; }
+.btag-aula     { background: rgba(239,68,68,.15);   color: #fca5a5; }
+.btag-ic       { background: rgba(107,114,128,.2);  color: #9ca3af; }
+.btag-coursera { background: rgba(245,158,11,.15);  color: #fcd34d; }
+.btag-livre    { background: rgba(139,92,246,.15);  color: #c4b5fd; }
+.btag-revisao  { background: rgba(16,185,129,.15);  color: #6ee7b7; }
+
+.block-duration {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--s2);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.block-chevron {
+  color: var(--muted);
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+
+.block-chevron.open { transform: rotate(90deg); }
+
+/* expanded body */
+.block-body {
+  display: none;
+  padding: 0 16px 16px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.block-body.open { display: block; padding-top: 14px; }
+
+.block-desc {
+  font-size: 13px;
+  color: var(--muted2);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.block-tasks { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+
+.task-item::before {
+  content: '→';
+  color: var(--coursera);
+  font-family: var(--mono);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.block-links { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.blink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--coursera);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid rgba(245,158,11,.3);
+  border-radius: 6px;
+  transition: all .15s;
+  letter-spacing: .03em;
+}
+
+.blink:hover { background: rgba(245,158,11,.08); border-color: var(--coursera); }
+.blink::after { content: '↗'; font-size: 10px; }
+.blink.blue { color: #93c5fd; border-color: rgba(59,130,246,.3); }
+.blink.blue:hover { background: rgba(59,130,246,.08); border-color: #93c5fd; }
+.blink.green { color: #6ee7b7; border-color: rgba(16,185,129,.3); }
+.blink.green:hover { background: rgba(16,185,129,.08); border-color: #6ee7b7; }
+.blink.purple { color: #c4b5fd; border-color: rgba(139,92,246,.3); }
+.blink.purple:hover { background: rgba(139,92,246,.08); border-color: #c4b5fd; }
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: -320px; z-index: 100; transition: left .3s; }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 99; }
+  .sidebar-overlay.show { display: block; }
+  .mobile-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: var(--s1);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin: -32px -28px 28px -28px;
+  }
+  .hamburger {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--s2);
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .mobile-title { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+  .main { padding: 32px 20px 60px; }
+  .block-body { padding-left: 16px; }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu { display: none; }
+  .sidebar-overlay { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-name">Felipe Gomes</div>
+    <div class="sidebar-sub">ADS · UTFPR · Pato Branco</div>
+  </div>
+
+  <div class="mini-cal">
+    <div class="mini-cal-title">Roadmap Coursera</div>
+    <div class="month-track" id="month-track"></div>
+  </div>
+
+  <nav class="calendar-nav" id="calendar-nav">
+    </nav>
+
+  <div class="sidebar-footer">
+    <div class="prog-label">
+      <span>progresso da semana</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-bar">
+      <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+    
+    <div class="backup-actions">
+      <button class="backup-btn" onclick="exportBackup()">↓ Exportar</button>
+      <button class="backup-btn" onclick="document.getElementById('import-file').click()">↑ Importar</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importBackup(event)">
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="mobile-menu">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <span class="mobile-title" id="mobile-title">Calendário</span>
+  </div>
+
+  <div class="main-header">
+    <div>
+      <div class="main-day-name" id="main-day-name">—</div>
+      <div class="main-meta" id="main-meta">—</div>
+    </div>
+    <div class="header-right">
+      <div class="today-date" id="today-date">—</div>
+      <div class="check-summary" id="check-summary">—</div>
+      <button class="reset-btn" onclick="resetDay()">↺ resetar este dia</button>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+</main>
+</div>
+
+<script>
+// ── DATA DOS CURSOS (Validados Dinamicamente) ──────────────
+const MONTH_COURSES = {
+  3: { label:'Módulo 1', period:'Abril', course:'Python for Everybody', provider:'Univ. Michigan', url:'https://www.coursera.org/specializations/python', cls:'mb-1', hrLink:'https://www.hackerrank.com/domains/python', hrLabel:'HackerRank Python' },
+  4: { label:'Módulo 2', period:'Maio', course:'SQL for Data Science', provider:'IBM', url:'https://www.coursera.org/learn/sql-data-science', cls:'mb-2', hrLink:'https://www.hackerrank.com/domains/sql', hrLabel:'HackerRank SQL' },
+  5: { label:'Módulo 3', period:'Junho', course:'IBM Back-End Dev', provider:'IBM', url:'https://www.coursera.org/professional-certificates/ibm-backend-development', cls:'mb-3', hrLink:'https://www.hackerrank.com/domains/algorithms', hrLabel:'HackerRank Algoritmos' },
+  6: { label:'Módulo 4', period:'Julho', course:'IBM AI Developer', provider:'IBM', url:'https://www.coursera.org/professional-certificates/applied-artifical-intelligence-ibm-watson-ai', cls:'mb-4', hrLink:'https://www.hackerrank.com/domains/algorithms', hrLabel:'HackerRank Algoritmos' }
+};
+
+const DAY_NAMES = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// ── ESTADO DA APLICAÇÃO ─────────────────────────────
+let currentDateStr = ''; 
+let calendarDays = []; 
+let openWeeks = {}; 
+
+// Gera as datas de 01/Abril/2026 até 31/Julho/2026
+function initCalendar() {
+  let start = new Date(2026, 3, 1); 
+  let end = new Date(2026, 6, 31);  
+  let d = new Date(start);
+  while(d <= end) {
+    calendarDays.push(d.toISOString().split('T')[0]);
+    d.setDate(d.getDate() + 1);
+  }
+}
+
+function calcDuration(start, end) {
+  const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+  let diff = toMin(end) - toMin(start);
+  if (diff < 0) diff += 1440;
+  const h = Math.floor(diff/60), min = diff%60;
+  return h > 0 ? (min > 0 ? `${h}h${min}min` : `${h}h`) : `${min}min`;
+}
+
+// ── BLOCOS UNIVERSAIS ───────────────────────
+const getWorkMorning = () => ({
+  id:'work-m', type:'work', start:'08:00', end:'12:00',
+  title:'TAGAT — Suporte Técnico N2 (Manhã)', tags:[{l:'trabalho',c:'work'}],
+  desc:'Turno da manhã. Foco em resolver tickets, analisar logs do dia anterior e banco de dados.',
+  tasks:['Verificar fila de chamados prioridade', 'Anotar queries SQL interessantes'], links:[]
+});
+
+const getWorkAfternoon = () => ({
+  id:'work-t', type:'work', start:'13:20', end:'18:00',
+  title:'TAGAT — Suporte Técnico N2 (Tarde)', tags:[{l:'trabalho',c:'work'}],
+  desc:'Turno da tarde. Prepara as pendências para o próximo turno e limpa a fila.',
+  tasks:['Resolver chamados abertos', 'Buffer para demandas do CA (Tesouraria)'], links:[]
+});
+
+function getCourseraBlock(monthIdx) {
+  const courseInfo = MONTH_COURSES[monthIdx] || MONTH_COURSES[3];
+  return {
+    id:'coursera', type:'coursera', start:'21:45', end:'00:00',
+    title:`Coursera — ${courseInfo.course}`,
+    tags:[{l:'coursera',c:'coursera'},{l:courseInfo.provider,c:'coursera'}],
+    desc:`Dia forte de estudo. Foco atual: ${courseInfo.course}. Regra de ouro: primeiros 20min são de ${courseInfo.hrLabel} SEM IA.`,
+    tasks:[
+      `20min: ${courseInfo.hrLabel} Easy SEM usar IA`,
+      'Avançar 1 módulo completo do curso atual',
+      'Fazer o quiz do módulo'
+    ],
+    links:[
+      {label:'Abrir Curso', url:courseInfo.url, cls:''},
+      {label:courseInfo.hrLabel, url:courseInfo.hrLink, cls:'green'}
+    ]
+  };
+}
+
+function generateScheduleForDate(dateStr) {
+  const [y, m, d] = dateStr.split('-');
+  const dateObj = new Date(y, m - 1, d);
+  const dayOfWeek = dateObj.getDay(); 
+  const monthIdx = dateObj.getMonth();
+
+  let schedule = { title: DAY_NAMES[dayOfWeek], meta: '', blocks: [] };
+
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+    schedule.blocks.push(getWorkMorning());
+    schedule.blocks.push(getWorkAfternoon());
+  }
+
+  switch(dayOfWeek) {
+    case 1: 
+      schedule.meta = 'Trabalho + IC PLN + Aula BD';
+      schedule.blocks.push(
+        { id:'seg-ic', type:'ic', start:'19:00', end:'21:00', title:'IC PLN — Iniciação Científica (UTFPR)', tags:[{l:'IC PLN',c:'ic'},{l:'NLP',c:'ic'}], desc:'Trabalho no pipeline NLP, análise de sentimento, Hugging Face.', tasks:['Avançar nos notebooks da IC','Documentar o progresso no GitHub'], links:[{label:'Repositório IC', url:'https://github.com/Felipe-GGomes/IniciacaoCientifica_PLN', cls:'blue'}] },
+        { id:'seg-aula', type:'aula', start:'21:20', end:'23:00', title:'Aula — BD (Banco de Dados)', tags:[{l:'UTFPR',c:'aula'},{l:'BD',c:'aula'}], desc:'Aula presencial. Conecta diretamente com SQL for Data Science.', tasks:['Focar em JOINs e Subqueries'], links:[{label:'HackerRank SQL', url:'https://www.hackerrank.com/domains/sql', cls:'green'}] },
+        { id:'seg-revisao', type:'revisao', start:'23:10', end:'00:00', title:'Revisão leve', tags:[{l:'revisão',c:'revisao'}], desc:'Nada de conteúdo novo. 1 exercício rápido e cama.', tasks:['Revisão da aula de Banco de Dados'], links:[] }
+      ); break;
+    case 2: 
+      schedule.meta = 'Trabalho + Aula BD + Coursera (Power Farm)';
+      schedule.blocks.push(
+        { id:'ter-aula', type:'aula', start:'19:30', end:'21:10', title:'Aula — BD (Banco de Dados)', tags:[{l:'UTFPR',c:'aula'}], desc:'Segunda aula semanal de Banco de Dados.', tasks:['Anotar dúvidas de modelagem'], links:[] },
+        getCourseraBlock(monthIdx)
+      ); break;
+    case 3: 
+      schedule.meta = 'Trabalho + Aula ED1 + Coursera (Power Farm)';
+      schedule.blocks.push(
+        { id:'qua-aula', type:'aula', start:'18:40', end:'21:10', title:'Aula — ED1 (Estrutura de Dados)', tags:[{l:'UTFPR',c:'aula'}], desc:'Listas, filas, pilhas.', tasks:['Conectar os algoritmos com Python'], links:[] },
+        getCourseraBlock(monthIdx)
+      ); break;
+    case 4: 
+      schedule.meta = 'Dia Pesado — MDP + ED1 + POO';
+      schedule.blocks.push(
+        { id:'qui-aula', type:'aula', start:'18:40', end:'23:00', title:'Aulas — MDP + ED1 + POO', tags:[{l:'UTFPR',c:'aula'}], desc:'Sequência pesada de programação.', tasks:['Focar em POO (base para Django)'], links:[] },
+        { id:'qui-revisao', type:'revisao', start:'23:15', end:'00:00', title:'Revisão das Aulas', tags:[{l:'revisão',c:'revisao'}], desc:'Releitura rápida e sono.', tasks:['Dormir cedo'], links:[] }
+      ); break;
+    case 5: 
+      schedule.meta = 'Trabalho + Aula POO + Bloco Livre/ERP';
+      schedule.blocks.push(
+        { id:'sex-aula', type:'aula', start:'18:40', end:'20:20', title:'Aula — POO (Prog. Orientada a Objetos)', tags:[{l:'UTFPR',c:'aula'}], desc:'Última aula da semana.', tasks:['Prestar atenção em Herança e Classes'], links:[] },
+        { id:'sex-livre', type:'livre', start:'21:00', end:'23:00', title:'Bloco livre — ERP Ovinos / Coursera', tags:[{l:'ERP Ovinos',c:'livre'}], desc:'Se estiver bem, adianta a trilha. Se cansado, trabalha no ERP da família.', tasks:['Melhorar uma feature do ERP','Jogar Kayn Azul pós 23:00 sem culpa'], links:[{label:'Lovable ERP', url:'https://lovable.dev', cls:'purple'}] }
+      ); break;
+    case 6: 
+      schedule.meta = 'Descanso / Limpeza / LoL';
+      schedule.blocks.push(
+        { id:'sab-manha', type:'ic', start:'09:00', end:'11:00', title:'Limpeza & Organização', tags:[{l:'doméstico',c:'ic'}], desc:'Limpar casa com a namorada.', tasks:[], links:[] },
+        { id:'sab-livre', type:'livre', start:'11:00', end:'23:59', title:'Descanso Total / Família', tags:[{l:'lazer',c:'livre'}], desc:'Tempo de curtir. Zero peso na consciência.', tasks:['LoL', 'Sair com namorada/pais'], links:[] }
+      ); break;
+    case 0: 
+      schedule.meta = 'Recarga para a semana';
+      schedule.blocks.push(
+        { id:'dom-rest', type:'livre', start:'00:00', end:'23:59', title:'Domingo é domingo.', tags:[{l:'descanso',c:'livre'}], desc:'Dorme, relaxa e prepara a mente para a Segunda.', tasks:[], links:[] }
+      ); break;
+  }
+  return schedule;
+}
+
+// ── LÓGICA DE CHECK E STORAGE ───────────────────────
+function getStorageKey(dateStr, blockId) { return `felipe_check_${dateStr}_${blockId}`; }
+
+function isChecked(dateStr, blockId) {
+  try { return localStorage.getItem(getStorageKey(dateStr, blockId)) === '1'; } catch(e) { return false; }
+}
+
+function setChecked(dateStr, blockId, val) {
+  try {
+    if (val) localStorage.setItem(getStorageKey(dateStr, blockId), '1');
+    else localStorage.removeItem(getStorageKey(dateStr, blockId));
+  } catch(e) {}
+}
+
+function resetDay() {
+  if (!confirm('Resetar todos os checks DESTE dia?')) return;
+  const schedule = generateScheduleForDate(currentDateStr);
+  schedule.blocks.forEach(b => setChecked(currentDateStr, b.id, false));
+  renderSchedule();
+  updateSidebarWeeks(); 
+  updateProgress();
+}
+
+// ── IMPORT / EXPORT (JSON BACKUP) ────────────────────
+function exportBackup() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('felipe_check_')) {
+      data[key] = localStorage.getItem(key);
+    }
+  }
+  
+  if(Object.keys(data).length === 0) {
+    alert("Não há progresso salvo para exportar ainda.");
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `power_farm_backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      
+      // Limpa os antigos (opcional, para não misturar saves de datas muito distantes)
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key.startsWith('felipe_check_')) localStorage.removeItem(key);
+      }
+      
+      // Insere os novos
+      for (const key in data) {
+        if (key.startsWith('felipe_check_')) {
+          localStorage.setItem(key, data[key]);
+        }
+      }
+      
+      alert('Progresso importado com sucesso!');
+      
+      // Força a atualização da interface
+      selectDate(currentDateStr);
+      updateSidebarWeeks();
+    } catch (err) {
+      alert('Erro ao ler o arquivo. Tem certeza que é o JSON correto?');
+    }
+    event.target.value = ''; // Reseta o input para permitir importar o mesmo arquivo depois
+  };
+  reader.readAsText(file);
+}
+
+// ── RENDERS ─────────────────────────────────────────
+function renderAllModulesCard() {
+  const [y, m, d] = currentDateStr.split('-');
+  const currentMonthIdx = parseInt(m) - 1;
+  const container = document.getElementById('month-track');
+  
+  let html = '';
+  [3,4,5,6].forEach(idx => {
+    const courseInfo = MONTH_COURSES[idx];
+    const isActive = idx === currentMonthIdx ? 'active' : '';
+    html += `
+      <div class="month-item ${isActive}">
+        <span class="month-badge ${courseInfo.cls}">${courseInfo.label}</span>
+        <div class="month-info">
+          <div class="month-label">${courseInfo.period} · ${courseInfo.provider}</div>
+          <div class="month-course">${courseInfo.course}</div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function renderCalendarNav() {
+  const container = document.getElementById('calendar-nav');
+  let html = '';
+  let currentMonthLabel = '';
+  let currentWeekNumber = 0;
+  let weekHtml = '';
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  calendarDays.forEach((dateStr, index) => {
+    const [y, m, d] = dateStr.split('-');
+    const dateObj = new Date(y, m - 1, d);
+    const dayOfWeek = dateObj.getDay();
+    const monthName = MONTH_NAMES[dateObj.getMonth()];
+    
+    if (monthName !== currentMonthLabel) {
+      if (weekHtml !== '') {
+        html += closeWeekGroup(currentWeekNumber, weekHtml);
+        weekHtml = '';
+      }
+      html += `<div class="month-divider">${monthName} ${y}</div>`;
+      currentMonthLabel = monthName;
+      currentWeekNumber++; 
+    }
+
+    if (dayOfWeek === 1 || index === 0 || weekHtml === '') {
+      if (weekHtml !== '') {
+        html += closeWeekGroup(currentWeekNumber, weekHtml);
+      }
+      currentWeekNumber++;
+      weekHtml = '';
+    }
+
+    const isToday = dateStr === todayStr ? 'is-today' : '';
+    const isActive = dateStr === currentDateStr ? 'active' : '';
+    const count = generateScheduleForDate(dateStr).blocks.length;
+
+    if (isActive && openWeeks[`week-${currentWeekNumber}`] === undefined) {
+      openWeeks[`week-${currentWeekNumber}`] = true;
+    }
+
+    weekHtml += `
+      <button class="day-btn ${isActive} ${isToday}" onclick="selectDate('${dateStr}')" id="btn-${dateStr}">
+        <span class="day-date-num">${parseInt(d)}</span>
+        <span class="day-week-name">${DAY_NAMES[dayOfWeek].split('-')[0]}</span>
+        <span class="day-count">${count}</span>
+      </button>
+    `;
+  });
+
+  if (weekHtml !== '') html += closeWeekGroup(currentWeekNumber, weekHtml);
+  container.innerHTML = html;
+  updateSidebarWeeks(); 
+}
+
+function closeWeekGroup(weekId, content) {
+  const isOpen = openWeeks[`week-${weekId}`] ? 'open' : '';
+  return `
+    <div class="week-group" id="wg-${weekId}">
+      <div class="week-header ${isOpen}" onclick="toggleWeekNav(${weekId})" id="wh-${weekId}">
+        <span>Semana ${weekId}</span>
+      </div>
+      <div class="week-days ${isOpen}" id="wd-${weekId}">
+        ${content}
+      </div>
+    </div>
+  `;
+}
+
+function updateSidebarWeeks() {
+  document.querySelectorAll('.week-group').forEach(group => {
+    const btns = group.querySelectorAll('.day-btn');
+    let totalBlocks = 0;
+    let doneBlocks = 0;
+    
+    btns.forEach(btn => {
+      const dateStr = btn.id.replace('btn-', '');
+      const sched = generateScheduleForDate(dateStr);
+      sched.blocks.forEach(b => {
+        totalBlocks++;
+        if (isChecked(dateStr, b.id)) doneBlocks++;
+      });
+    });
+
+    const header = group.querySelector('.week-header');
+    if (totalBlocks > 0 && totalBlocks === doneBlocks) {
+      header.classList.add('done');
+    } else {
+      header.classList.remove('done');
+    }
+  });
+}
+
+function toggleWeekNav(weekId) {
+  const key = `week-${weekId}`;
+  openWeeks[key] = !openWeeks[key];
+  
+  const header = document.getElementById(`wh-${weekId}`);
+  const days = document.getElementById(`wd-${weekId}`);
+  
+  if (openWeeks[key]) {
+    header.classList.add('open');
+    days.classList.add('open');
+  } else {
+    header.classList.remove('open');
+    days.classList.remove('open');
+  }
+}
+
+function renderSchedule() {
+  const schedule = generateScheduleForDate(currentDateStr);
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = '';
+
+  document.getElementById('main-day-name').innerHTML = `${schedule.title} <span>${currentDateStr.split('-')[2]}</span>`;
+  document.getElementById('main-meta').textContent = schedule.meta;
+  
+  const [y, m, d] = currentDateStr.split('-');
+  document.getElementById('today-date').textContent = `${d} de ${MONTH_NAMES[parseInt(m)-1]} de ${y}`;
+
+  schedule.blocks.forEach((b, i) => {
+    const checked = isChecked(currentDateStr, b.id);
+    const dur = calcDuration(b.start, b.end);
+
+    const tasksHtml = b.tasks.length ? `<div class="block-tasks">${b.tasks.map(t => `<div class="task-item">${t}</div>`).join('')}</div>` : '';
+    const linksHtml = b.links.length ? `<div class="block-links">${b.links.map(l => `<a class="blink ${l.cls||''}" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`).join('')}</div>` : '';
+    const tagsHtml = b.tags.map(t => `<span class="btag btag-${t.c}">${t.l}</span>`).join('');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'block-wrap';
+    wrap.style.animationDelay = (i * 0.05) + 's';
+    wrap.innerHTML = `
+      <div class="block-card type-${b.type} ${checked ? 'done' : ''}" id="card-${b.id}">
+        <div class="block-header" onclick="toggleBlock('${b.id}')">
+          <div class="block-check ${checked ? 'checked' : ''}" id="chk-${b.id}"
+               onclick="event.stopPropagation(); toggleCheck('${b.id}')"></div>
+          <div class="block-time-range"><b>${b.start}</b> – <b>${b.end}</b></div>
+          <div class="block-center">
+            <div class="block-title">${b.title}</div>
+            <div class="block-tagrow">${tagsHtml}<span class="block-duration">${dur}</span></div>
+          </div>
+          <div class="block-chevron" id="chev-${b.id}">▶</div>
+        </div>
+        <div class="block-body" id="body-${b.id}">
+          <p class="block-desc">${b.desc}</p>
+          ${tasksHtml}
+          ${linksHtml}
+        </div>
+      </div>
+    `;
+    tl.appendChild(wrap);
+  });
+
+  updateCheckSummary(schedule);
+}
+
+function toggleBlock(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const open = body.classList.toggle('open');
+  chev.classList.toggle('open', open);
+}
+
+function toggleCheck(id) {
+  const was = isChecked(currentDateStr, id);
+  setChecked(currentDateStr, id, !was);
+  
+  document.getElementById('chk-' + id).classList.toggle('checked', !was);
+  document.getElementById('card-' + id).classList.toggle('done', !was);
+  
+  updateCheckSummary(generateScheduleForDate(currentDateStr));
+  updateProgress();
+  updateSidebarWeeks(); 
+}
+
+function updateCheckSummary(schedule) {
+  const total = schedule.blocks.length;
+  const done = schedule.blocks.filter(b => isChecked(currentDateStr, b.id)).length;
+  document.getElementById('check-summary').innerHTML = `<b>${done}</b> de ${total} concluídas hoje`;
+}
+
+function updateProgress() {
+  const [y, m, d] = currentDateStr.split('-');
+  const currDateObj = new Date(y, m - 1, d);
+  const day = currDateObj.getDay();
+  
+  const diff = currDateObj.getDate() - day + (day === 0 ? -6 : 1);
+  const startOfWeek = new Date(currDateObj.setDate(diff));
+
+  let total = 0, done = 0;
+
+  for (let i = 0; i < 7; i++) {
+    const checkDate = new Date(startOfWeek);
+    checkDate.setDate(startOfWeek.getDate() + i);
+    const dStr = checkDate.toISOString().split('T')[0];
+    
+    if(calendarDays.includes(dStr)) {
+      const sched = generateScheduleForDate(dStr);
+      sched.blocks.forEach(b => {
+        total++;
+        if(isChecked(dStr, b.id)) done++;
+      });
+    }
+  }
+
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent = pct + '%';
+}
+
+function selectDate(dateStr) {
+  currentDateStr = dateStr;
+  renderAllModulesCard(); 
+  renderCalendarNav(); 
+  renderSchedule(); 
+  updateProgress(); 
+
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── INIT ──────────────────────────────────────────────
+initCalendar();
+
+const realToday = new Date().toISOString().split('T')[0];
+const initialDate = calendarDays.includes(realToday) ? realToday : calendarDays[0];
+
+setTimeout(() => {
+  selectDate(initialDate);
+  const btn = document.getElementById('btn-' + initialDate);
+  if(btn) btn.scrollIntoView({ block: 'center' });
+}, 50);
+</script>
+</body>
+</html>
