@@ -12,7 +12,11 @@
 - **Calendário Dinâmico (Abril – Julho 2026):** Abre no dia atual automaticamente e ajusta os cursos do Coursera conforme o mês.
 - **Navegação em Acordeão:** Semanas agrupadas. Quando todos os blocos de uma semana são concluídos, ela recebe um *strike-through* (riscado) visual de "Fase Concluída".
 - **Tracking Persistente:** Checkmarks salvos no `localStorage` indexados por data exata (`YYYY-MM-DD`), para você ter o histórico real de longo prazo.
-- **Cloud Backup Manual (Zero Custo):** Botões de "Exportar" e "Importar" geram um arquivo `.json` super leve. Permite sincronizar o progresso entre o PC do Suporte N2 e o PC de casa.
+- **Cloud Backup Manual (Zero Custo):** Botões de "Exportar" e "Importar" geram um arquivo `.json` super leve contendo todo o seu progresso e anotações. Permite sincronizar entre o PC do Suporte N2 e o PC de casa.
+- **Widgets de Produtividade:**
+  - ⏱️ **Timer Anti-IA:** Cronômetro flutuante de 20 minutos para forçar o foco no código puro antes de recorrer a assistentes virtuais.
+  - 📝 **Buffer N2:** Bloco de notas lateral que salva automaticamente no navegador (ótimo para armazenar queries SQL ou logs rápidos durante o trabalho).
+- **Atalhos Diretos:** Acesso a um clique para ferramentas da stack (HackerRank, LeetCode, Hugging Face, Coursera, Regex101 e Lovable).
 - **Barra de Progresso Inteligente:** Calcula a porcentagem de conclusão apenas da *semana atual* que está sendo visualizada.
 - **100% Responsivo:** Interface otimizada para "farmar" abrindo pelo celular.
 
@@ -30,7 +34,7 @@
 | **Sáb** | — | — | Descanso / Família / Limpeza |
 | **Dom** | — | — | Descanso Total (Nexus Down) |
 
-> **⚠️ Regra de Ouro:** *Nexus Down* às **00:30** em dias de semana. PC desligado para garantir a performance no dia seguinte.
+> **⚠️ Regra de Ouro:** *Nexus Down* às **00:30** em dias de semana. A interface sinaliza visualmente que é hora de desligar o PC para garantir a performance no dia seguinte.
 
 ---
 
@@ -49,9 +53,9 @@
 
 ## 🧠 Metodologia "Anti-Tilt" (Estudo de Alta Performance)
 
-1. **Anti-Dependência:** HackerRank SEMPRE nos primeiros 20min de cada bloco Coursera, estritamente sem IA.
+1. **Anti-Dependência:** Startar o *Timer Anti-IA* e fazer HackerRank/LeetCode SEMPRE nos primeiros 20min de cada bloco Coursera.
 2. **Read, Code, Refactor:** Escreve a lógica no código **primeiro**, pede pra IA (Claude/ChatGPT) revisar apenas **depois**.
-3. **Técnica Feynman:** Explica o conteúdo complexo em voz alta ou documentando em inglês no GitHub.
+3. **Técnica Feynman:** Explica o conteúdo complexo em voz alta ou documentando em inglês no repositório.
 4. **Laboratório Prático:** Todo conhecimento de Python/Backend é testado na construção do **GestãoGomes PRO** (ERP Ovinos) e na API de sentimento da Iniciação Científica.
 5. **Domingo é Domingo:** Zero estudo, sem culpa.
 
@@ -60,7 +64,7 @@
 ## 🛠️ Stack Tecnológica
 
 - HTML5 + CSS3 + Vanilla JavaScript (Zero frameworks, altíssima velocidade).
-- `localStorage` API para persistência local de dados por data.
+- `localStorage` API para persistência local de dados por data e anotações.
 - JSON Blob API para exportação/importação do Save State.
 - Google Fonts (`JetBrains Mono` para código/números + `Sora` para leitura fluida).
 - Hospedagem Serverless via GitHub Pages.
@@ -68,3 +72,5 @@
 ---
 
 ## 🚀 Como subir no GitHub Pages
+
+Siga estes passos rápidos no terminal para colocar a aplicação no ar:
